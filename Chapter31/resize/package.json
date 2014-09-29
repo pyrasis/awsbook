@@ -1,0 +1,12 @@
+{
+  "name": "ExamplePhotoResizeServer",
+  "version": "0.0.1",
+  "description": "ExamplePhotoResizeServer",
+  "dependencies": {
+    "aws-sdk": "2.0.x",
+    "mime": "1.2.x",
+    "sequelize": "1.7.x",
+    "mysql": "2.3.2",
+    "imagemagick": "0.1.x"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "Description" : "Create an EC2 instance running the Amazon Linux 64 bit AMI.",
+  "Parameters" : {
+    "KeyPair" : {
+      "Description" : "The EC2 Key Pair to allow SSH access to the instance",
+      "Type" : "String",
+      "Default" : "awskeypair"
+    }
+  },
+  "Resources" : {
+    "Ec2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "KeyName" : { "Ref" : "KeyPair" },
+        "ImageId" : "ami-c9562fc8",
+        "InstanceType" : "t1.micro"
+      }
+    }
+  },
+  "Outputs" : {
+    "InstanceId" : {
+      "Description" : "The InstanceId of the newly created EC2 instance",
+      "Value" : {
+        "Ref" : "Ec2Instance"
+      }
+    }
+  },
+  "AWSTemplateFormatVersion" : "2010-09-09"
+}

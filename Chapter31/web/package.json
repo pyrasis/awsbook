@@ -1,0 +1,13 @@
+{
+  "name": "ExamplePhotoWebServer",
+  "version": "0.0.1",
+  "description": "ExamplePhotoWebServer",
+  "dependencies": {
+    "express": "4.4.x",
+    "multer": "0.1.x",
+    "aws-sdk": "2.0.x",
+    "mime": "1.2.x",
+    "sequelize": "1.7.x",
+    "mysql": "2.3.2"
+  }
+}

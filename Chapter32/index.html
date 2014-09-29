@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>ExampleTicket</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  
+  <div id="stage" class="btn btn-default" style="width:600px; margin-left:265px;">Stage</div>
+  <div><span>ID: </span><span id="userId"></span></div>
+  <div id="seats" class="col-xs-12"></div>
+  
+  <div id="dialog" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">결제</h4>
+        </div>
+        <div class="modal-body">
+          <p><span id="seatId"></span> 좌석을 결제하시겠습니까?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="pay" type="button" class="btn btn-primary" data-dismiss="modal">결제</button>
+          <button id="cancel" type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>    
+    $(function () {
+      var currentSeat;
+      var socket;
+      var userId = prompt('ID를 입력하세요', '');
+      $('#userId').text(userId);
+
+      function action(seat, actionType) {
+        socket.emit('action', {
+          actionType: actionType,
+          userId: userId,
+          row: seat.data('row'),
+          col: seat.data('col')
+        });
+      }
+
+      function openDialog(seat) {
+        $('#seatId').text(seat.data('row') + '-' + seat.data('col'));
+        $('#dialog').modal({ keyboard: false, backdrop: 'static' });
+      }
+
+      function updateSeat(data) {
+        var seat = $('div[data-row="' + data.row + '"][data-col="' + data.col + '"]');
+        if (data.actionType == 'reserve')
+          seat.removeClass('btn-default').addClass('btn-warning');
+        else if (data.actionType == 'cancel')
+          seat.removeClass('btn-warning').addClass('btn-default');
+        else if (data.actionType == 'pay')
+          seat.removeClass('btn-warning').addClass('btn-success');
+
+        if (data.userId == userId && (data.actionType == 'reserve' || data.actionType == 'pay'))
+          seat.addClass('active');
+        else
+          seat.removeClass('active');
+      }
+
+      function drawSeats() {
+        var seat;
+        var rowSymbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+                          'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                          'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $('#seats').css({ 'height': '550px', 'width': '1100px' });
+
+        var colDiv = $('<div>');
+        colDiv.css({ 'width': '35px', 'height': '550px', 'float': 'left',  });
+        for (var row = 1; row <= 26; row++) {
+          var rowSymbol = $('<div>');
+          rowSymbol.css({
+            'width': '30px',
+            'height': '25px',
+            'padding-top': '7px',
+            'margin-top': '12px',
+            'margin-bottom': '1px' });
+          rowSymbol.addClass('badge').text(rowSymbols[row - 1]);
+          colDiv.append(rowSymbol);
+        }
+        $('#seats').append(colDiv);
+
+        for (var col = 1; col <= 32; col++) {
+          var colDiv = $('<div>');
+          for (var row = 1; row <= 26; row++) {
+            colDiv.css({ 'height': '550px', 'width': '30px', 'float': 'left' });
+
+            seat = $('<div>');
+            seat.css({ 'width': '30px',
+                       'height': '30px',
+                       'padding-left': '5px',
+                       'padding-top': '5px',
+                       'margin-bottom': '8px' })
+            .addClass('btn btn-default seat').text(col);
+            seat.attr('data-row', rowSymbols[row - 1]).attr('data-col', col);
+            colDiv.append(seat);
+          }
+
+          if (col <= 8)
+            colDiv.css('margin-top', col * 10);
+          else if (col <= 24 && col > 8)
+            colDiv.css('margin-top', '80px');
+          else if (col > 24)
+            colDiv.css('margin-top', (33 - col) * 10);
+
+          $('#seats').append(colDiv);
+
+          if (col % 4 == 0) {
+            var way = $('<div>');
+            way.css({ 'width': '10px', 'height': '550px', 'float': 'left' });
+            $('#seats').append(way);
+          }
+        }
+      }
+
+      $.get('/ip', function (ip) {
+        socket = io.connect(ip);
+        socket.on('connect', function () {
+          $('.seat').click(function () {
+            if ($(this).hasClass('btn-warning') || $(this).hasClass('btn-success'))
+              return;
+
+            currentSeat = $(this);
+            action($(this), 'reserve');
+          });
+
+          $('#pay').click(function () {
+            action(currentSeat, 'pay');
+            currentSeat = null;
+          });
+
+          $('#cancel').click(function () {
+            action(currentSeat, 'cancel');
+            currentSeat = null;
+          });
+
+          socket.on('result', function (data) {
+            if (currentSeat && data.userId == userId && data.actionType == 'reserve')
+              openDialog(currentSeat);
+            updateSeat(data);
+          });
+        });
+      });
+
+      drawSeats();
+
+      $.getJSON('/seats', function (data) {
+        $.each(data, function (i, e) {
+          updateSeat(e);
+        });
+      });
+    });
+  </script> 
+</body>
+</html>

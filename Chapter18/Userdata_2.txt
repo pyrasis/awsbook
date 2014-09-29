@@ -1,0 +1,6 @@
+#!/bin/bash
+cd /home/ec2-user
+mkdir ExampleServer
+chown -R ec2-user.ec2-user ExampleServer
+aws s3 sync s3://examples3origin/ExampleServer ExampleServer
+node /home/www/ExampleServer/app.js &

@@ -1,0 +1,1 @@
+{"Statement":[{"Resource":"http://*","Condition":{"IpAddress":{"AWS:SourceIp":"111.111.111.111"},"DateLessThan":{"AWS:EpochTime":1399206886}}}]}

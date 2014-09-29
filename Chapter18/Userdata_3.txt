@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home/ec2-user
+git clone https://id:password@github.com/mycompany/ExampleServer.git ExampleServer
+chown -R ec2-user.ec2-user ExampleServer
+node /home/www/ExampleServer/app.js &

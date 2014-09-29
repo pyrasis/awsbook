@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>ExamplePhoto</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/css/jquery.fileupload.min.css">
+  
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload.min.js"></script>
+</head>
+<body>
+  <span class="btn btn-success fileinput-button">
+    <i class="glyphicon glyphicon-plus"></i>
+      <span>Select files...</span>
+      <input id="fileupload" type="file" name="images" multiple>
+  </span>
+  
+  <div id="progress" class="progress">
+    <div class="progress-bar progress-bar-success"></div>
+  </div>
+  
+  <div id="imagelist"></div>
+  
+  <script>
+    $(function () {
+      $('#fileupload').fileupload({
+        url: '/images',
+        dataType: 'json',
+        progressall: function (e, data) {
+          var progress = parseInt(data.loaded / data.total * 100, 10);
+          $('#progress .progress-bar').css('width', progress + '%');
+        }
+      });
+      
+      $.getJSON('/images', function (data) {
+        $.each(data, function (i, e) {
+          var img = $('<img>');
+          // 도메인을 구입하였다면 image 서브 도메인 입력
+          //img.attr('src', 'http://image.examplephoto.com/resized/' + e)
+          // 도메인을 구입하지 않았다면 CloudFront 배포 도메인 입력
+          img.attr('src', 'http://d3fo0v5xpnp6x5.cloudfront.net/resized/' + e)
+          .attr({'width': '150px', 'height': '150px' })
+          .addClass('img-thumbnail');
+          $('#imagelist').append(img);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

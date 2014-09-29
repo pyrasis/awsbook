@@ -1,0 +1,15 @@
+{
+  "name": "ExampleGameServer",
+  "version": "0.0.1",
+  "description": "ExampleGameServer",
+  "dependencies": {
+    "express": "4.4.x",
+    "express-validator": "2.3.x",
+    "body-parser": "1.3.x",
+    "aws-sdk": "2.0.x",
+    "redis": "0.10.x",
+    "sequelize": "1.7.x",
+    "mysql": "2.3.2",
+    "moment": "2.7.x"
+  }
+}

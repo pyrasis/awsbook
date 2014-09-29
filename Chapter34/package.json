@@ -1,0 +1,10 @@
+{
+  "name": "deploy",
+  "version": "0.0.1",
+  "description": "deploy",
+  "dependencies": {
+    "aws-sdk": "2.0.x",
+    "sshclient": "0.0.4",
+    "async": "0.9.x"
+  }
+}
